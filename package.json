@@ -56,5 +56,8 @@
   "bugs": {
     "url": "https://github.com/VictorKozachek/dsh-user-code-block/issues"
   },
-  "homepage": "https://github.com/VictorKozachek/dsh-user-code-block#readme"
+  "homepage": "https://github.com/VictorKozachek/dsh-user-code-block#readme",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  }
 }
