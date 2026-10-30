@@ -1,7 +1,7 @@
 {
   "name": "dsh-user-code-block",
   "version": "0.4.0",
-  "description": "Рисует fenced-блоки кода в сообщениях пользователя DSH: подсветка синтаксиса, копирование и монохромный режим; остальной текст остаётся обычным",
+  "description": "Renders fenced code blocks in DSH user messages: syntax highlighting, copy button and monochrome mode; the rest of the message stays plain text",
   "type": "module",
   "main": "lib/index.js",
   "exports": {

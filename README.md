@@ -2,137 +2,133 @@
 
 ![tests](https://github.com/VictorKozachek/dsh-user-code-block/actions/workflows/tests.yml/badge.svg)
 
-Плагин для DSH: рисует блоки кода в **сообщениях пользователя** — рамка, плашка
-языка, подсветка синтаксиса и кнопка копирования. Остальной текст сообщения
-остаётся обычным текстом.
+A DSH plugin that renders fenced code blocks in **user messages**: frame, language
+banner, syntax highlighting and a copy button. The rest of the message stays
+plain text.
 
-**In short (EN).** DSH renders user messages as plain text, so fenced code blocks
-stay literal there. This client plugin registers a `uiConversation.userText`
-matcher for fences and renders them through the `conversation.user.text.node`
-slot: language banner, monospaced block, theme-aware syntax highlighting through
-`--shiki-token-*` variables, and a copy button. No server logic, no
-dependencies, no build step — the browser half is a hand-written plain-JS module.
+English | [Русский](README.ru.md)
 
-## Зачем
+## Why
 
-Сообщения ассистента рендерит markdown (`AssistantMarkdown`), а сообщения
-пользователя — примитив `UserText`: обычный текст с `white-space: pre-wrap`.
-Поэтому fenced-блок
+Assistant messages are rendered as markdown (`AssistantMarkdown`), while user
+messages go through the `UserText` primitive: plain text with
+`white-space: pre-wrap`. So a fenced block
 
     ```python
     print("hi")
     ```
 
-в своём сообщении виден вместе с кавычками, без подсветки и рамки. Плагин
-добавляет ровно одно исключение: распознаёт забор кода и рисует его так же,
-как блок в ответе ассистента. Ссылки, `@`-упоминания и прочие штатные узлы
-`UserText` работают как раньше.
+shows up in your own message with the backticks visible — no highlighting, no
+frame. The plugin adds exactly one exception: it recognizes the fence and renders
+it the same way as a block in an assistant reply. Links, `@`-mentions and the
+other built-in `UserText` nodes keep working as before.
 
-## Что распознаётся
+## What is recognized
 
-- забор из трёх и более обратных кавычек или тильд;
-- отступ до трёх пробелов (четыре — уже не забор);
-- язык из информационной строки берётся первым словом: ```` ```python title=x ```` → `python`;
-- забор из четырёх кавычек корректно вмещает тройные внутри;
-- **незакрытый** забор блоком не считается: остаток сообщения не превращается
-  в код из-за забытых кавычек.
+- a fence of three or more backticks or tildes;
+- up to three spaces of indentation (four spaces is no longer a fence);
+- the language is the first word of the info string: ```` ```python title=x ```` → `python`;
+- a four-backtick fence correctly contains triple backticks inside;
+- an **unclosed** fence is not treated as a block: leftover text never turns
+  into code because of forgotten backticks.
 
-Одинарные обратные кавычки (`код в строке`) не трогаются — это не блок.
+Single backticks (`inline code`) are left alone — that is not a block.
 
-## Подсветка
+## Highlighting
 
-Цвета берутся из переменных темы `--shiki-token-*`, которые DSH уже публикует
-(`shiki.css` в `@deepseek-ai/dsh-client-ui-theme`). Светлая и тёмная палитры
-переключаются сами через `body[data-ds-dark-theme]`, поэтому плагину не нужно
-определять активную тему.
+Colors come from the `--shiki-token-*` variables DSH already publishes
+(`shiki.css` in `@deepseek-ai/dsh-client-ui-theme`). Light and dark palettes
+switch by themselves through `body[data-ds-dark-theme]`, so the plugin never
+needs to detect the active theme.
 
-Токены размечает собственный лексер — без shiki и без клиентских примитивов
-(документация DSH запрещает плагинам подключать их как модули). Поддерживаются:
+Tokens are classified by a small built-in lexer — no shiki, no client primitives
+(DSH documentation forbids plugins to import them as modules). Supported:
 
-| Язык в заборе | Что красится |
+| Fence language | What gets colored |
 |---|---|
-| `python`, `py` | ключевые слова, `True`/`False`/`None`, строки (включая тройные), комментарии `#`, числа |
-| `js`, `ts`, `jsx`, `tsx`, `javascript`, `typescript` | ключевые слова, `true`/`false`/`null`, строки, `//` и `/* */`, числа |
-| `json`, `jsonc` | ключи-строки, `true`/`false`/`null`, числа |
-| `bash`, `sh`, `shell`, `zsh` | ключевые слова, строки, `#`-комментарии, числа |
-| `go`, `golang` | ключевые слова, `true`/`false`/`nil`/`iota`, строки, `//` и `/* */` |
-| `rust`, `rs` | ключевые слова, `None`/`Some`/`Ok`/`Err`, строки, комментарии |
-| `java` | модификаторы и типы, `true`/`false`/`null`, строки, комментарии |
-| `html`, `xml`, `svg`, `htm` | теги, атрибуты, значения-строки, `<!-- -->` |
-| `sql` (с диалектами), `css`, `scss` | ключевые слова/строки/комментарии по возможностям языка |
+| `python`, `py` | keywords, `True`/`False`/`None`, strings (including triple-quoted), `#` comments, numbers |
+| `js`, `ts`, `jsx`, `tsx`, `javascript`, `typescript` | keywords, `true`/`false`/`null`, strings, `//` and `/* */`, numbers |
+| `json`, `jsonc` | string keys, `true`/`false`/`null`, numbers |
+| `bash`, `sh`, `shell`, `zsh` | keywords, strings, `#` comments, numbers |
+| `go`, `golang` | keywords, `true`/`false`/`nil`/`iota`, strings, `//` and `/* */` |
+| `rust`, `rs` | keywords, `None`/`Some`/`Ok`/`Err`, strings, comments |
+| `java` | modifiers and types, `true`/`false`/`null`, strings, comments |
+| `html`, `xml`, `svg`, `htm` | tags, attributes, string values, `<!-- -->` |
+| `sql` (and dialects), `css`, `scss` | keywords/strings/comments as far as the language allows |
 
-**Монохромный режим.** Заборы ` ```text `, ` ```txt `, ` ```plain `, ` ```output `,
-` ```log `, ` ```console `, ` ```terminal `, ` ```diff `, ` ```md ` не подсвечиваются:
-рамка и плашка остаются, а цвет не применяется. Это для транскриптов терминала
-и логов, где правила кода дают случайную раскраску (зелёные «строки» из вывода
-`grep`, плюсы трейса как пунктуация и т. п.).
+**Monochrome mode.** The fences ` ```text `, ` ```txt `, ` ```plain `,
+` ```output `, ` ```log `, ` ```console `, ` ```terminal `, ` ```diff `, ` ```md `
+are not highlighted: the frame and the banner stay, color is not applied. This is
+for terminal transcripts and logs, where code rules produce bogus colors (green
+"strings" out of `grep` output, trace plus signs as punctuation, and so on).
 
-Прочие языки тоже рисуются без подсветки — лучше честный моноширинный текст,
-чем неверная раскраска.
+Other languages also render without highlighting — honest monospaced text beats
+wrong colors.
 
-### Палитра
+### Palette
 
-Каждый тип токена берёт цвет из переменной темы, поэтому светлая и тёмная
-палитры переключаются сами:
+Each token type takes its color from a theme variable, so light and dark palettes
+switch by themselves:
 
-| Тип токена | Переменная темы | Что попадает |
+| Token type | Theme variable | What lands there |
 |---|---|---|
 | `keyword` | `--shiki-token-keyword` | `def`, `func`, `fn`, `public`, `if`, `return` |
-| `string` | `--shiki-token-string` | строки во всех поддерживаемых языках |
+| `string` | `--shiki-token-string` | strings in every supported language |
 | `comment` | `--shiki-token-comment` | `#`, `//`, `/* */`, `<!-- -->` |
-| `constant` | `--shiki-token-constant` | числа, `true`/`null`/`nil`/`None`, КАПС-имена (`MAX_SIZE`) |
-| `function` | `--shiki-token-function` | вызовы (`print`, `Println`, `main`), атрибуты HTML |
-| `type` | `--shiki-token-parameter` | встроенные типы (`int`, `String`, `Vec`), CSS-свойства |
-| `punctuation` | `--shiki-token-punctuation` | скобки, операторы, запятые |
+| `constant` | `--shiki-token-constant` | numbers, `true`/`null`/`nil`/`None`, SCREAMING_CASE names (`MAX_SIZE`) |
+| `function` | `--shiki-token-function` | calls (`print`, `Println`, `main`), HTML attributes |
+| `type` | `--shiki-token-parameter` | built-in types (`int`, `String`, `Vec`), CSS properties |
+| `punctuation` | `--shiki-token-punctuation` | brackets, operators, commas |
 
-Встроенные типы и CSS-свойства — отдельный тип токена: в Go, Rust, Python и
-JavaScript это не ключевые слова, а предобъявленные имена, поэтому лексер кода
-их бы не увидел. Списки лежат в `GO_TYPES`, `RUST_TYPES`, `PYTHON_TYPES`,
+Built-in types and CSS properties get their own token type: in Go, Rust, Python
+and JavaScript they are not keywords but predeclared names, so a code lexer would
+miss them. The lists live in `GO_TYPES`, `RUST_TYPES`, `PYTHON_TYPES`,
 `JAVASCRIPT_TYPES`, `JAVA_TYPES`, `SQL_TYPES`.
 
-## Кнопка копирования
+## Copy button
 
-В шапке блока справа есть `Copy`: в буфер уходит исходный код, без разметки и
-подсветки. Через 1.5 секунды подпись возвращается. Если браузер не даёт доступ
-к `navigator.clipboard`, кнопка не рисуется вовсе — вместо сломанной кнопки
-лучше ничего.
+The block header carries `Copy` on the right: the clipboard receives the original
+code, without markup or highlighting. The label reverts after 1.5 seconds. When
+the browser does not grant `navigator.clipboard`, the button is not rendered at
+all — better nothing than a broken button.
 
-## Точки расширения DSH
+## DSH extension points
 
-Плагин использует штатные механизмы (см. `docs` пакета `ui-chat`, раздел
-«Sent user text»):
+The plugin rides the documented mechanisms (see the `docs` of the `ui-chat`
+package, section "Sent user text"):
 
 - `ctx.uiConversation.userText.register({ id, order, match(text, from) })` —
-  синхронный матчер, возвращающий кандидата `{ id, start, end, data }`;
-- слот `conversation.user.text.node` — рендерер узла, `key` совпадает с `id`.
+  a synchronous matcher returning a candidate `{ id, start, end, data }`;
+- the `conversation.user.text.node` slot — the node renderer whose `key` matches
+  the `id`.
 
-Хост-половина пустая: `lib/index.js` экспортирует `apply() {}` — она нужна
-только чтобы ряд появился в cordis-дереве профиля.
+The host half is empty: `lib/index.js` exports `apply() {}`. It exists only so
+the row appears in the profile's cordis tree.
 
-## Установка
+## Installation
 
-Плагин ставится в профиль DSH (`desktop` или `web`). Проверялось на
+The plugin installs into a DSH profile (`desktop` or `web`). Tested on
 DSH Desktop 0.2.1-rc.3.
 
-### Скриптом
+### With the script
 
 ```bash
 git clone https://github.com/VictorKozachek/dsh-user-code-block.git
 cd dsh-user-code-block
-./install.sh          # профиль по умолчанию: ~/.dsh/profiles/desktop
+./install.sh          # default profile: ~/.dsh/profiles/desktop
 ```
 
-Скрипт делает бэкап манифеста профиля, дописывает пакет в `dependencies`
-(`link:`) и в `dsh.profile.bundles`, ставит симлинк в `node_modules`. Другой
-профиль задаётся переменной:
+The script backs up the profile manifest, adds the package to `dependencies`
+(`link:`) and to `dsh.profile.bundles`, and creates the `node_modules` symlink.
+Another profile is selected with a variable:
 
 ```bash
 DSH_PROFILE_DIR="$HOME/.dsh/profiles/web" ./install.sh
 ```
 
-### Вручную
+### Manually
 
-1. Дописать пакет в `~/.dsh/profiles/desktop/package.json`:
+1. Add the package to `~/.dsh/profiles/desktop/package.json`:
 
    ```json
    {
@@ -151,55 +147,55 @@ DSH_PROFILE_DIR="$HOME/.dsh/profiles/web" ./install.sh
    }
    ```
 
-2. Поставить ссылку в `node_modules` профиля:
+2. Create the symlink in the profile's `node_modules`:
 
    ```bash
    ln -s /path/to/dsh-user-code-block \
          ~/.dsh/profiles/desktop/node_modules/dsh-user-code-block
    ```
 
-3. Перезапустить приложение: граф клиентских модулей собирается при старте
-   хоста, обновлением страницы он не перечитывается.
+3. Restart the application: the client module graph is built when the host
+   starts, a page reload does not re-read it.
 
-### Через CLI
+### With the CLI
 
-Если `dsh` доступен как команда, установку делает сам менеджер плагинов:
+If `dsh` is available as a command, the plugin manager performs the installation:
 
 ```bash
 dsh plugin --profile desktop add /path/to/dsh-user-code-block
 ```
 
-## Проверка
+## Verification
 
-Отправить в чат сообщение с забором кода — блок должен отрисоваться рамкой с
-плашкой языка, остальной текст остаться обычным.
+Send a message with a fenced code block — the block should render with a frame
+and a language banner, and the rest of the message should stay plain.
 
-## Разработка
+## Development
 
-Зависимостей нет, сборки нет: правится `lib/client.js`, проверяется тестами.
+No dependencies, no build step: edit `lib/client.js` and run the tests.
 
 ```bash
 node --test test/*.test.mjs
 ```
 
-- `test/matcher.test.mjs` — разбор забора и лексер: поднимает фальшивый
-  `window.__ModuleLoader__`, забирает фабрику браузерной половины и вызывает её
-  с заглушкой React, поэтому тесты идут в Node без браузера.
-- `test/plugin.test.mjs` — связность пакета: манифест, слой патча, совпадение
-  id браузерного модуля с именем пакета.
+- `test/matcher.test.mjs` — fence parsing and the lexer: it installs a fake
+  `window.__ModuleLoader__`, captures the browser factory and calls it with a
+  React stub, so the tests run in Node without a browser.
+- `test/plugin.test.mjs` — package wiring: the manifest, the patch layer, and the
+  browser module id matching the package name.
 
-CI — GitHub Actions, матрица Node 20/22/24 на Ubuntu и macOS
+CI runs on GitHub Actions, Node 20/22/24 on Ubuntu and macOS
 (`.github/workflows/tests.yml`).
 
-## Откат
+## Uninstall
 
 ```bash
 ./uninstall.sh
 ```
 
-Или вручную: убрать `dsh-user-code-block` из `dsh.profile.bundles`, удалить
-ссылку из `node_modules` профиля и перезапустить приложение.
+Or manually: drop `dsh-user-code-block` from `dsh.profile.bundles`, remove the
+symlink from the profile's `node_modules`, and restart the application.
 
-## Лицензия
+## License
 
-MIT — см. [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).
