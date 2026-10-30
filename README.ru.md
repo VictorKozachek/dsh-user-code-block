@@ -1,6 +1,7 @@
 # dsh-user-code-block
 
 ![tests](https://github.com/VictorKozachek/dsh-user-code-block/actions/workflows/tests.yml/badge.svg)
+![npm](https://img.shields.io/npm/v/dsh-user-code-block)
 
 Плагин для **DeepSeek Harness Desktop** (DSH): рисует блоки кода в **сообщениях
 пользователя** — рамка, плашка языка, подсветка синтаксиса и кнопка копирования.
@@ -117,7 +118,17 @@ JavaScript это не ключевые слова, а предобъявлен�
 Плагин ставится в профиль DSH (`desktop` или `web`). Проверялось на
 DSH Desktop 0.2.1-rc.3.
 
-### Скриптом
+### Из npm
+
+```bash
+dsh plugin --profile desktop add dsh-user-code-block
+```
+
+Это рекомендуемый путь: менеджер плагинов сам ставит пакет, записывает его в
+`package.json` профиля и в `dsh.profile.bundles`, а плагин загружается при
+следующем старте DSH.
+
+### Из исходников
 
 ```bash
 git clone https://github.com/VictorKozachek/dsh-user-code-block.git
@@ -164,9 +175,9 @@ DSH_PROFILE_DIR="$HOME/.dsh/profiles/web" ./install.sh
 3. Перезапустить приложение: граф клиентских модулей собирается при старте
    хоста, обновлением страницы он не перечитывается.
 
-### Через CLI
+### Через CLI из локального каталога
 
-Если `dsh` доступен как команда, установку делает сам менеджер плагинов:
+Менеджер плагинов умеет ставить и локальный чекаут вместо пакета из npm:
 
 ```bash
 dsh plugin --profile desktop add /path/to/dsh-user-code-block

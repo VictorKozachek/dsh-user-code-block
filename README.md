@@ -1,6 +1,7 @@
 # dsh-user-code-block
 
 ![tests](https://github.com/VictorKozachek/dsh-user-code-block/actions/workflows/tests.yml/badge.svg)
+![npm](https://img.shields.io/npm/v/dsh-user-code-block)
 
 A plugin for **DeepSeek Harness Desktop** (DSH) that renders fenced code blocks
 in **user messages**: frame, language banner, syntax highlighting and a copy
@@ -118,7 +119,17 @@ the row appears in the profile's cordis tree.
 The plugin installs into a DSH profile (`desktop` or `web`). Tested on
 DSH Desktop 0.2.1-rc.3.
 
-### With the script
+### From npm
+
+```bash
+dsh plugin --profile desktop add dsh-user-code-block
+```
+
+This is the recommended path: the plugin manager installs the package, records it
+in the profile's `package.json` and `dsh.profile.bundles`, and the plugin loads on
+the next DSH start.
+
+### From source
 
 ```bash
 git clone https://github.com/VictorKozachek/dsh-user-code-block.git
@@ -165,9 +176,9 @@ DSH_PROFILE_DIR="$HOME/.dsh/profiles/web" ./install.sh
 3. Restart the application: the client module graph is built when the host
    starts, a page reload does not re-read it.
 
-### With the CLI
+### With the CLI from a local path
 
-If `dsh` is available as a command, the plugin manager performs the installation:
+The plugin manager can also install a local checkout instead of the npm package:
 
 ```bash
 dsh plugin --profile desktop add /path/to/dsh-user-code-block
