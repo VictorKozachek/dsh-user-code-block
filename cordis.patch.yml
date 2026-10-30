@@ -1,0 +1,7 @@
+# Патч-слой пакета `dsh-user-code-block`.
+#
+# Монтирует единственный ряд. Хост-половина пустая (`lib/index.js`), браузерная
+# приходит через `exports["./client"]` и объявление `dsh.client` в package.json.
+- insert:
+    - id: ui-user-code-block
+      name: 'dsh-user-code-block'

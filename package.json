@@ -1,0 +1,56 @@
+{
+  "name": "dsh-user-code-block",
+  "version": "0.4.0",
+  "description": "Рисует fenced-блоки кода в сообщениях пользователя DSH: подсветка синтаксиса, копирование и монохромный режим; остальной текст остаётся обычным",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "lib/index.js",
+    "lib/client.js",
+    "cordis.patch.yml",
+    "install.sh",
+    "uninstall.sh"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": []
+    }
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.2"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "syntax-highlighting",
+    "code-block",
+    "chat-ui"
+  ],
+  "author": "Victor <vkozachek@me.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VictorKozachek/dsh-user-code-block.git"
+  },
+  "bugs": {
+    "url": "https://github.com/VictorKozachek/dsh-user-code-block/issues"
+  },
+  "homepage": "https://github.com/VictorKozachek/dsh-user-code-block#readme"
+}
