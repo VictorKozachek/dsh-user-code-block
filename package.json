@@ -1,7 +1,7 @@
 {
   "name": "dsh-user-code-block",
   "version": "0.4.0",
-  "description": "Renders fenced code blocks in DSH user messages: syntax highlighting, copy button and monochrome mode; the rest of the message stays plain text",
+  "description": "Renders fenced code blocks in DeepSeek Harness Desktop chat user messages: syntax highlighting, copy button and monochrome mode",
   "type": "module",
   "main": "lib/index.js",
   "exports": {
@@ -41,7 +41,10 @@
     "deepseek-harness",
     "syntax-highlighting",
     "code-block",
-    "chat-ui"
+    "chat-ui",
+    "deepseek",
+    "deepseek-harness-desktop",
+    "dsh-desktop"
   ],
   "author": "Victor <vkozachek@me.com>",
   "license": "MIT",

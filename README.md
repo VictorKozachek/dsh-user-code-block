@@ -2,11 +2,19 @@
 
 ![tests](https://github.com/VictorKozachek/dsh-user-code-block/actions/workflows/tests.yml/badge.svg)
 
-A DSH plugin that renders fenced code blocks in **user messages**: frame, language
-banner, syntax highlighting and a copy button. The rest of the message stays
-plain text.
+A plugin for **DeepSeek Harness Desktop** (DSH) that renders fenced code blocks
+in **user messages**: frame, language banner, syntax highlighting and a copy
+button. The rest of the message stays plain text.
 
 English | [Русский](README.ru.md)
+
+## Compatibility
+
+- **DeepSeek Harness Desktop** 0.2.1-rc.3 — verified; the 0.1.x builds expose the
+  same extension points
+- any DSH profile (`desktop` or `web`) that mounts the `ui-chat` client package
+- Node.js 20+ for development and the test suite
+- no runtime dependencies, no build step
 
 ## Why
 
