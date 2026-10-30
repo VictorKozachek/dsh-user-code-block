@@ -30,7 +30,8 @@
     "@deepseek-ai/cordis": "^4.0.2"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "node --test test/*.test.mjs"
   },
   "engines": {
     "node": ">=20"
