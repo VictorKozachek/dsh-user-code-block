@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   test:
-    name: node ${{ matrix.node }} на ${{ matrix.os }}
+    name: node ${{ matrix.node }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -25,12 +25,12 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
 
-      # Зависимостей нет, поэтому install не нужен: проверяем сразу.
-      - name: Версия node
+      # There are no dependencies, so no install step is needed.
+      - name: Node version
         run: node --version
 
-      - name: Синтаксис браузерной половины
+      - name: Browser half syntax
         run: node --check lib/client.js
 
-      - name: Тесты
+      - name: Tests
         run: node --test test/*.test.mjs

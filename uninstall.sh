@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 #
-# Снимает dsh-user-code-block с профиля DSH desktop: убирает пакет из
-# dependencies и dsh.profile.bundles, удаляет симлинк из node_modules.
-# Сам каталог пакета не трогается.
+# Remove dsh-user-code-block from a DSH profile: drop the package from
+# dependencies and dsh.profile.bundles, delete the symlink from node_modules.
+# The package directory itself is left untouched.
 set -euo pipefail
 
 PKG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,13 +11,13 @@ PROFILE="${DSH_PROFILE_DIR:-$HOME/.dsh/profiles/desktop}"
 MANIFEST="$PROFILE/package.json"
 
 if [ ! -f "$MANIFEST" ]; then
-  echo "не найден манифест профиля: $MANIFEST" >&2
+  echo "profile manifest not found: $MANIFEST" >&2
   exit 1
 fi
 
 STAMP="$(date +%Y%m%d-%H%M%S)"
 cp "$MANIFEST" "$MANIFEST.bak.$STAMP"
-echo "бэкап: $MANIFEST.bak.$STAMP"
+echo "backup: $MANIFEST.bak.$STAMP"
 
 node - "$MANIFEST" "$PKG_NAME" <<'NODE'
 const [, , manifestPath, name] = process.argv;
@@ -33,14 +33,14 @@ if (Array.isArray(bundles)) {
 }
 
 fs.writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-console.log(`манифест обновлён: ${name} убран`);
+console.log(`manifest updated: ${name} removed`);
 NODE
 
 LINK="$PROFILE/node_modules/$PKG_NAME"
 if [ -L "$LINK" ] || [ -e "$LINK" ]; then
   rm -f "$LINK"
-  echo "симлинк удалён: $LINK"
+  echo "symlink removed: $LINK"
 fi
 
 echo
-echo "готово. перезапустите приложение DSH."
+echo "done. Restart the DSH application."

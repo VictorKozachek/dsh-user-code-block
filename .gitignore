@@ -1,12 +1,12 @@
-# Зависимостей у плагина нет: ставить нечего.
+# The plugin has no dependencies, so there is nothing to install.
 node_modules/
 
-# Бэкапы, которые оставляют install.sh и uninstall.sh.
+# Backups left behind by install.sh and uninstall.sh.
 package.json.bak.*
 
-# Песочница профиля для проверки скриптов установки.
+# Profile sandbox used to test the install scripts.
 .sandbox-profile/
 
-# Служебный мусор.
+# Service junk.
 .DS_Store
 *.log

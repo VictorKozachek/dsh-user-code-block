@@ -1,7 +1,8 @@
-# Патч-слой пакета `dsh-user-code-block`.
+# Patch layer of the `dsh-user-code-block` package.
 #
-# Монтирует единственный ряд. Хост-половина пустая (`lib/index.js`), браузерная
-# приходит через `exports["./client"]` и объявление `dsh.client` в package.json.
+# It mounts a single row. The host half is empty (`lib/index.js`); the browser
+# half arrives through `exports["./client"]` and the `dsh.client` declaration in
+# package.json.
 - insert:
     - id: ui-user-code-block
       name: 'dsh-user-code-block'
